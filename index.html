@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ultra Modern vCard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #6c5ce7;
+        --primary-dark: #5649c0;
+        --secondary: #00cec9;
+        --dark: #2d3436;
+        --light: #f5f6fa;
+        --gray: #636e72;
+        --success: #00b894;
+        --glass: rgba(255, 255, 255, 0.15);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", "Segoe UI", sans-serif;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      body {
+        background: linear-gradient(-45deg, #6c5ce7, #00cec9, #6c5ce7, #00cec9);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        color: var(--light);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        overflow-x: hidden;
+      }
+
+      .vcard-container {
+        perspective: 1500px;
+        width: 100%;
+        max-width: 420px;
+      }
+
+      .vcard {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 2rem;
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        transform-style: preserve-3d;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        border: 1px solid var(--glass);
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .vcard:hover {
+        transform: translateY(-15px) rotateX(5deg);
+        box-shadow: 0 35px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .vcard::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          rgba(108, 92, 231, 0.1) 0%,
+          rgba(0, 206, 201, 0.1) 100%
+        );
+        z-index: -1;
+      }
+
+      .vcard-header {
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .vcard-header::after {
+        content: "";
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          var(--secondary) 0%,
+          transparent 70%
+        );
+        opacity: 0.2;
+      }
+
+      .profile-container {
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 1.5rem;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .profile-border {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: var(--secondary);
+        border-right-color: var(--secondary);
+        animation: spin 8s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--glass);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        transition: all 0.3s ease;
+      }
+
+      .profile-img:hover {
+        transform: scale(1.05);
+      }
+
+      .vcard-header h1 {
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin-bottom: 0.25rem;
+        background: linear-gradient(to right, var(--light), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .vcard-header p {
+        font-weight: 300;
+        opacity: 0.9;
+        letter-spacing: 1px;
+      }
+
+      .vcard-body {
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+      }
+
+      .contact-info {
+        margin-bottom: 2rem;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--glass);
+      }
+
+      .contact-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(10px);
+      }
+
+      .contact-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.25rem;
+        flex-shrink: 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .contact-details h3 {
+        font-size: 0.8rem;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.25rem;
+        color: var(--secondary);
+      }
+
+      .contact-details p,
+      .contact-details a {
+        color: var(--light);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.05rem;
+      }
+
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .social-link {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 1.25rem;
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--glass);
+      }
+
+      .social-link:hover {
+        transform: translateY(-5px) scale(1.1);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .download-btn {
+        display: block;
+        width: 100%;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        text-decoration: none;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .download-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .download-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .download-btn:hover::before {
+        left: 100%;
+      }
+
+      .download-btn i {
+        margin-right: 0.75rem;
+      }
+
+      .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .shape {
+        position: absolute;
+        opacity: 0.1;
+      }
+
+      .shape-1 {
+        width: 100px;
+        height: 100px;
+        background: var(--secondary);
+        border-radius: 50%;
+        top: 20%;
+        left: -30px;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      .shape-2 {
+        width: 150px;
+        height: 150px;
+        background: var(--primary);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        bottom: -50px;
+        right: -50px;
+        animation: float 10s ease-in-out infinite;
+      }
+
+      .shape-3 {
+        width: 80px;
+        height: 80px;
+        background: var(--light);
+        border-radius: 20px;
+        top: 60%;
+        left: 30%;
+        transform: rotate(45deg);
+        animation: float 7s ease-in-out infinite reverse;
+      }
+
+      @media (max-width: 480px) {
+        .vcard {
+          border-radius: 1.5rem;
+        }
+
+        .vcard-header {
+          padding: 2rem 1.5rem;
+        }
+
+        .profile-container {
+          width: 110px;
+          height: 110px;
+        }
+
+        .profile-img {
+          width: 100px;
+          height: 100px;
+        }
+
+        .vcard-body {
+          padding: 1.5rem;
+        }
+
+        .contact-item {
+          padding: 0.75rem;
+        }
+
+        .download-btn {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vcard-container">
+      <div class="vcard">
+        <div class="floating-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
+
+        <div class="vcard-header">
+          <div class="profile-container">
+            <div class="profile-border"></div>
+            <img
+              src="./download.jpeg"
+              alt="Profile"
+              class="profile-img"
+              id="profile-img"
+            />
+          </div>
+          <h1>Leyla Məmmədova</h1>
+          <p>Creative Director | UI/UX Designer</p>
+        </div>
+
+        <div class="vcard-body">
+          <div class="contact-info">
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Phone</h3>
+                <a href="tel:+994501234567">+994 50 123 45 67</a>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Email</h3>
+                <a href="mailto:leyla@example.com">leyla@example.com</a>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Location</h3>
+                <p>Baku, Azerbaijan</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fas fa-globe"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Website</h3>
+                <a href="https://leyla.design" target="_blank">leyla.design</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-dribbble"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-behance"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"
+              ><i class="fab fa-linkedin-in"></i
+            ></a>
+          </div>
+
+          <button class="download-btn" id="download-btn">
+            <i class="fas fa-download"></i> DOWNLOAD VCARD
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        function generateVCard() {
+          const vcard = `BEGIN:VCARD
+VERSION:4.0
+FN:Leyla Məmmədova
+N:Məmmədova;Leyla;;;
+TEL;TYPE=WORK,CELL:+994501234567
+EMAIL;TYPE=WORK:leyla@example.com
+URL;TYPE=WORK:https://leyla.design
+ADR;TYPE=WORK:;;Baku;;;;Azerbaijan
+ORG:Creative Design Studio
+TITLE:Creative Director | UI/UX Designer
+ROLE:Design
+NOTE:Available for freelance projects
+REV:${new Date().toISOString()}
+X-SOCIALPROFILE;TYPE=dribbble:https://dribbble.com/leyla
+X-SOCIALPROFILE;TYPE=behance:https://behance.net/leyla
+X-SOCIALPROFILE;TYPE=instagram:https://instagram.com/leyla
+X-SOCIALPROFILE;TYPE=linkedin:https://linkedin.com/in/leyla
+END:VCARD`;
+          return vcard;
+        }
+
+        // Download button functionality
+        document
+          .getElementById("download-btn")
+          .addEventListener("click", function () {
+            const vcardData = generateVCard();
+            const blob = new Blob([vcardData], { type: "text/vcard" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "leyla_mammadova.vcf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Button animation
+            const btn = this;
+            btn.innerHTML = '<i class="fas fa-check"></i> DOWNLOADED!';
+            btn.style.background =
+              "linear-gradient(135deg, var(--success), #00cec9)";
+
+            setTimeout(() => {
+              btn.innerHTML = '<i class="fas fa-download"></i> DOWNLOAD VCARD';
+              btn.style.background =
+                "linear-gradient(135deg, var(--primary), var(--secondary))";
+            }, 2000);
+          });
+
+        // Random profile image (for demo)
+        const genders = ["men", "women"];
+        const randomGender =
+          genders[Math.floor(Math.random() * genders.length)];
+        const randomId = Math.floor(Math.random() * 100);
+        document.getElementById("profile-img").src = `./download.jpeg`;
+
+        // Floating animation for shapes
+        const shapes = document.querySelectorAll(".shape");
+        shapes.forEach((shape, index) => {
+          shape.style.animationDelay = `${index * 2}s`;
+        });
+      });
+    </script>
+  </body>
+</html>
